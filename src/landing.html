@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ECTRA Service Center | By Kieslect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&amp;family=Archivo+Black&amp;family=IBM+Plex+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "surface-container-low": "#f7f3f2",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#000000",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#3f0400",
+                    "on-primary-fixed-variant": "#474646",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#1c1b1b",
+                    "tertiary": "#000000",
+                    "on-tertiary-fixed": "#1c1b1a",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#f4f0ef",
+                    "surface-container": "#f1edec",
+                    "surface-variant": "#e5e2e1",
+                    "surface-tint": "#5f5e5e",
+                    "on-secondary-container": "#590800",
+                    "on-primary-fixed": "#1c1b1b",
+                    "tertiary-fixed-dim": "#cac6c4",
+                    "background": "#fdf8f8",
+                    "surface": "#fdf8f8",
+                    "on-surface": "#1c1b1b",
+                    "outline-variant": "#c4c7c7",
+                    "primary-fixed": "#e5e2e1",
+                    "secondary": "#b5250c",
+                    "inverse-surface": "#313030",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#ebe7e6",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#c8c6c5",
+                    "secondary-fixed-dim": "#ffb4a5",
+                    "on-tertiary-container": "#868381",
+                    "primary-container": "#1c1b1b",
+                    "on-secondary-fixed-variant": "#8e1300",
+                    "on-primary-container": "#858383",
+                    "surface-container-highest": "#e5e2e1",
+                    "surface-bright": "#fdf8f8",
+                    "tertiary-fixed": "#e6e1df",
+                    "outline": "#747878",
+                    "secondary-fixed": "#ffdad3",
+                    "surface-dim": "#ddd9d8",
+                    "on-tertiary-fixed-variant": "#484645",
+                    "tertiary-container": "#1c1b1a",
+                    "on-surface-variant": "#444748",
+                    "secondary-container": "#fd583a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "margin-mobile": "20px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "stack-xl": "64px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "body-ar-lg": ["Tajawal"],
+                    "headline-ar-mobile": ["Tajawal"],
+                    "label-mono": ["IBM Plex Mono"],
+                    "display-lg": ["Archivo Black"],
+                    "body-ar-md": ["Tajawal"],
+                    "headline-ar": ["Tajawal"]
+            },
+            "fontSize": {
+                    "body-ar-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "500"}],
+                    "headline-ar-mobile": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                    "label-mono": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                    "body-ar-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-ar": ["32px", {"lineHeight": "1.4", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glow-effect {
+            background: radial-gradient(circle at center, rgba(253, 88, 58, 0.15) 0%, rgba(20, 20, 20, 0) 70%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(20, 20, 20, 0.04);
+        }
+        .card-shadow:hover {
+            box-shadow: 0 12px 30px rgba(20, 20, 20, 0.08);
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-ar-md overflow-x-hidden">
+<!-- Header / TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-container/80 backdrop-blur-md border-b border-surface-variant/30 shadow-sm transition-all duration-300">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto rtl">
+<div class="flex items-center gap-8">
+<div class="flex flex-col">
+<span class="font-display-lg text-primary text-2xl md:text-3xl leading-none">ECTRA<span class="text-secondary-container">.</span></span>
+<span class="text-[10px] md:text-[12px] font-label-mono tracking-widest text-on-surface-variant -mt-1">BY KIESLECT</span>
+</div>
+<div class="hidden md:flex gap-6">
+<a class="text-secondary font-bold border-b-2 border-secondary font-body-ar-md text-body-ar-md" href="#">الرئيسية</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 font-body-ar-md text-body-ar-md" href="#">خدماتنا</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 font-body-ar-md text-body-ar-md" href="#">المنتجات</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 font-body-ar-md text-body-ar-md" href="#">الأسئلة الشائعة</a>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-fixed border border-outline/20 px-6 py-2 rounded-lg font-body-ar-md text-body-ar-md cursor-pointer active:scale-95 transition-all">
+                تسجيل دخول الموظفين
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] pt-32 pb-20 bg-primary overflow-hidden">
+<div class="absolute inset-0 glow-effect pointer-events-none"></div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-2 gap-stack-xl items-center relative z-10">
+<div class="space-y-stack-lg">
+<span class="inline-block py-1 px-3 bg-secondary-container/10 text-secondary-container border border-secondary-container/30 rounded-full font-label-mono text-label-mono">
+                    OFFICIAL SERVICE CENTER
+                </span>
+<h1 class="font-headline-ar text-4xl md:text-5xl lg:text-6xl text-white leading-tight">
+                    جودة <span class="text-secondary-container">ECTRA</span> الفائقة..<br/>
+                    بضمان <span class="font-display-lg text-2xl md:text-4xl">MTC GROUP</span> المعتمد
+                </h1>
+<p class="text-on-primary-container font-body-ar-lg max-w-lg">
+                    استكشف عالم إكسسوارات كيزليكت واطمئن مع أفضل مراكز الخدمة في مصر، حيث تلتقي التكنولوجيا بالدقة.
+                </p>
+<div class="flex flex-wrap gap-stack-md pt-4">
+<button class="bg-secondary-container text-white px-8 py-4 rounded-xl font-headline-ar text-lg hover:scale-105 transition-transform duration-300">
+                        ابدأ الآن
+                    </button>
+<button class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-headline-ar text-lg hover:bg-white/10 transition-all">
+                        تسجيل الدخول
+                    </button>
+</div>
+</div>
+<div class="relative group perspective-1000">
+<img class="w-full h-auto object-contain rounded-3xl transition-transform duration-700 group-hover:rotate-y-6" data-alt="A professional studio product shot of premium black wireless earbuds and a sleek black power adapter against a dark, atmospheric background. A soft, glowing orange halo of light is positioned behind the products, creating a high-end technological mood. The ECTRA branding is visible on the products. The lighting is dramatic and cinematic, highlighting the clean textures of the hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGr8QkP3fcqKgYd8QhOEv_VgmZXVuRYaewIN3yYe_cj73NW7f3vRXm-HclQ9JmAkNWXoNZdBe18S_F4GVY5pFNMh7n-WskTyyi9-FD41jvMIbBK9ixGc7dQ5ZqdhPPfQ_gXmnsYFLitp8_8swLVkxo-DYAfBboUGGGDxZ1G4rY-scR6rSgJ8VLFWf79ODeffymRLP0-gT9aGeGrBqzqYbGnQ5ubobVRRxhL7hYSZ8YiVWV5yAsKLhVO2CwPM5V17a0u37KwsWiciY"/>
+<div class="absolute -bottom-8 -right-8 bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl hidden lg:block animate-pulse">
+<p class="font-label-mono text-secondary-container">Certified Partner</p>
+<p class="text-white font-headline-ar">Kieslect Egypt</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Why ECTRA Section -->
+<section class="py-stack-xl bg-surface">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-stack-xl">
+<h2 class="font-headline-ar text-headline-ar mb-4">لماذا تختار ECTRA؟</h2>
+<div class="w-24 h-1 bg-secondary-container mx-auto rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Why Item 1 -->
+<div class="p-8 rounded-xl bg-white card-shadow border border-surface-variant/30 text-center transition-all hover:-translate-y-2">
+<div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-secondary text-4xl">bolt</span>
+</div>
+<h3 class="font-headline-ar text-xl mb-3">شحن سريع</h3>
+<p class="text-on-surface-variant">تقنيات شحن ذكية تواكب سرعة يومك وتوفر الطاقة القصوى.</p>
+</div>
+<!-- Why Item 2 -->
+<div class="p-8 rounded-xl bg-white card-shadow border border-surface-variant/30 text-center transition-all hover:-translate-y-2">
+<div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-secondary text-4xl">graphic_eq</span>
+</div>
+<h3 class="font-headline-ar text-xl mb-3">صوت نقي</h3>
+<p class="text-on-surface-variant">تجربة سمعية غامرة مع سماعات Echo المصممة لأدق التفاصيل.</p>
+</div>
+<!-- Why Item 3 -->
+<div class="p-8 rounded-xl bg-white card-shadow border border-surface-variant/30 text-center transition-all hover:-translate-y-2">
+<div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-secondary text-4xl">verified</span>
+</div>
+<h3 class="font-headline-ar text-xl mb-3">منتجات أصلية</h3>
+<p class="text-on-surface-variant">نحن الوكيل المعتمد والوحيد لمنتجات Kieslect المبتكرة في مصر.</p>
+</div>
+<!-- Why Item 4 -->
+<div class="p-8 rounded-xl bg-white card-shadow border border-surface-variant/30 text-center transition-all hover:-translate-y-2">
+<div class="w-16 h-16 bg-surface-container-low rounded-2xl flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-secondary text-4xl">shield_lock</span>
+</div>
+<h3 class="font-headline-ar text-xl mb-3">ضمان معتمد</h3>
+<p class="text-on-surface-variant">دعم فني احترافي مباشر من MTC GROUP يضمن استمرارية جهازك.</p>
+</div>
+</div>
+<div class="mt-stack-xl opacity-30 grayscale hover:grayscale-0 transition-all duration-500">
+<img alt="Icons" class="w-full h-auto max-h-32 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfTR3ifNfVTNOdxlgOHXh9MRl2Z-GHNRxyYFc5K_7E1D7y37h5RKAixueF2QDFPc-quV6NuHnw7NZ4IEIQIXQf0nbI8j-242dFGSL35lQ2HxYv_w59qrl2IZkKGctNSQxt7vhvzShzaX7604KXlLoN45f2JWWGT7CrIVx_hMjkKk7AeVC630J_eVfb1hw67Mp2LVI2-9R6_U2jNymmd6ffPttxJcK3ufa0UhMKj1U6GpCxHa9qZTL3y_tROdANKpSr61-SxaUwsd8"/>
+</div>
+</div>
+</section>
+<!-- Product Categories -->
+<section class="py-stack-xl bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-ar text-headline-ar mb-2">استكشف منتجاتنا</h2>
+<p class="text-on-surface-variant">أحدث الابتكارات من كيزليكت بين يديك</p>
+</div>
+<button class="text-secondary font-bold flex items-center gap-2 hover:underline">
+                    مشاهدة الكل
+                    <span class="material-symbols-outlined">arrow_back</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
+<!-- Chargers Category -->
+<div class="group overflow-hidden rounded-3xl bg-surface-container relative p-12">
+<div class="relative z-10">
+<h3 class="font-display-lg text-3xl mb-4">CHARGERS</h3>
+<ul class="space-y-4">
+<li class="flex items-center justify-between p-4 bg-white rounded-xl card-shadow group-hover:translate-x-2 transition-transform duration-300">
+<span class="font-body-ar-lg">Fast Charger 35W</span>
+<span class="font-label-mono px-3 py-1 bg-secondary-container/10 text-secondary-container rounded-full">New</span>
+</li>
+<li class="flex items-center justify-between p-4 bg-white rounded-xl card-shadow group-hover:translate-x-2 transition-transform duration-300 delay-75">
+<span class="font-body-ar-lg">Fast Charger 25W</span>
+<span class="font-label-mono text-on-surface-variant">Dual Port</span>
+</li>
+<li class="flex items-center justify-between p-4 bg-white rounded-xl card-shadow group-hover:translate-x-2 transition-transform duration-300 delay-150">
+<span class="font-body-ar-lg">Wall Adapter 22.5W</span>
+<span class="font-label-mono text-on-surface-variant">Classic</span>
+</li>
+</ul>
+</div>
+<div class="absolute -left-20 -bottom-20 w-64 h-64 bg-secondary-container/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+</div>
+<!-- Audio Category -->
+<div class="group overflow-hidden rounded-3xl bg-primary relative p-12 text-white">
+<div class="relative z-10">
+<h3 class="font-display-lg text-3xl mb-4 text-secondary-container">AUDIO</h3>
+<ul class="space-y-4">
+<li class="flex items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 group-hover:-translate-x-2 transition-transform duration-300">
+<span class="font-body-ar-lg">Earbuds Echo Pro</span>
+<span class="material-symbols-outlined text-secondary-container" style="font-variation-settings: 'FILL' 1;">surround_sound</span>
+</li>
+<li class="flex items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 group-hover:-translate-x-2 transition-transform duration-300 delay-75">
+<span class="font-body-ar-lg">Earbuds Free ANC</span>
+<span class="font-label-mono text-white/60">Active Noise Cancel</span>
+</li>
+<li class="flex items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/10 group-hover:-translate-x-2 transition-transform duration-300 delay-150">
+<span class="font-body-ar-lg">Neckband Active</span>
+<span class="font-label-mono text-white/60">Sports Edition</span>
+</li>
+</ul>
+</div>
+<div class="absolute -right-20 -top-20 w-80 h-80 bg-secondary-container/20 rounded-full blur-3xl opacity-50 group-hover:opacity-80 transition-all duration-700"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Service Center (MTC GROUP) -->
+<section class="py-stack-xl bg-surface-container-low relative">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+<div class="lg:col-span-4 space-y-stack-md">
+<div class="inline-flex items-center gap-3 bg-secondary-container text-white px-4 py-2 rounded-lg font-label-mono">
+<span class="material-symbols-outlined text-sm">construction</span>
+                        SERVICE HUB
+                    </div>
+<h2 class="font-headline-ar text-4xl leading-tight">مركز صيانة MTC GROUP المعتمد</h2>
+<p class="text-on-surface-variant font-body-ar-lg">نحن هنا لخدمتك. فريقنا من المحترفين جاهز لإعادة أجهزتك لحالتها المثالية مع قطع الغيار الأصلية والضمان الشامل.</p>
+<div class="pt-8 space-y-4">
+<div class="flex items-start gap-4">
+<div class="mt-1 w-2 h-2 rounded-full bg-secondary-container"></div>
+<p class="font-body-ar-md">فحص فني شامل لكل الأجهزة</p>
+</div>
+<div class="flex items-start gap-4">
+<div class="mt-1 w-2 h-2 rounded-full bg-secondary-container"></div>
+<p class="font-body-ar-md">استلام وتسليم سريع في فروعنا</p>
+</div>
+<div class="flex items-start gap-4">
+<div class="mt-1 w-2 h-2 rounded-full bg-secondary-container"></div>
+<p class="font-body-ar-md">دعم فني مباشر عبر الواتساب</p>
+</div>
+</div>
+</div>
+<div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-gutter relative">
+<!-- Service Card 1 -->
+<div class="p-8 bg-white rounded-2xl shadow-xl border-b-4 border-secondary-container transition-all hover:scale-[1.02] cursor-pointer">
+<span class="material-symbols-outlined text-secondary-container text-5xl mb-6">workspace_premium</span>
+<h3 class="font-headline-ar text-xl mb-4">شهادة ضمان منتج</h3>
+<p class="text-on-surface-variant mb-6">فعّل ضمانك الآن وتأكد من أصالة المنتج عبر الرقم التسلسلي الخاص بك.</p>
+<button class="font-bold text-primary flex items-center gap-2 group">
+                            تفعيل الضمان <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+</button>
+</div>
+<!-- Service Card 2 -->
+<div class="p-8 bg-white rounded-2xl shadow-xl border-b-4 border-secondary-container transition-all hover:scale-[1.02] cursor-pointer">
+<span class="material-symbols-outlined text-secondary-container text-5xl mb-6">calendar_month</span>
+<h3 class="font-headline-ar text-xl mb-4">استلام صيانة</h3>
+<p class="text-on-surface-variant mb-6">احجز موعداً لفحص جهازك في أحد فروعنا المنتشرة لخدمتك بشكل أسرع.</p>
+<button class="font-bold text-primary flex items-center gap-2 group">
+                            حجز موعد <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+</button>
+</div>
+<!-- Service Card 3 (Wide) -->
+<div class="md:col-span-2 p-8 bg-primary text-white rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-stack-lg">
+<div class="flex-1">
+<h3 class="font-headline-ar text-2xl mb-4">تتبع طلب الصيانة</h3>
+<p class="text-white/70 mb-6">تابع حالة الصيانة خطوة بخطوة برقم الطلب وتعرف على موعد الاستلام المتوقع.</p>
+<div class="flex gap-2">
+<input class="bg-white/10 border-white/20 text-white rounded-lg px-4 py-3 flex-1 focus:ring-secondary-container" placeholder="أدخل رقم الطلب..." type="text"/>
+<button class="bg-secondary-container px-6 py-3 rounded-lg font-bold">تتبع</button>
+</div>
+</div>
+<div class="w-full md:w-1/3">
+<img class="rounded-xl w-full h-auto" data-alt="A clean, minimalist vector-style illustration of a customer support dashboard. It shows a simplified map with a red location pin, a status bar reading 'REPAIR IN PROGRESS', and a guarantee certificate with a red wax seal. The color palette is composed of light greys, whites, and vibrant coral orange accents, matching the brand identity of ECTRA." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4fpyP4cOVVKyUa-WPCUg_llRtqvf9FAU4qAXVAfYkq6NEXnkCxTdbp3svTgf7J7hN36AuNeMQxd1KOwnou4Qogv3BB9W7t9B7pnxVlZtKb797EN95FbdR5R56bmAI7g9Kw9EEKh65NCFFK7WMmLNxRGKkV_rcTIUkRrhy9qh_3xnIodyrvD2aRBtv5FIL90w45S-pg9gPPYaR3Wyo030mC-AmdL9HHtAgtxsmpNdxYNMcwecCcd5_AWhbZVEiG08GXd6-RTDgMlU"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="py-stack-xl bg-white">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-stack-xl">
+<h2 class="font-headline-ar text-headline-ar mb-4">رحلة الخدمة لدينا</h2>
+<p class="text-on-surface-variant">ثلاث خطوات بسيطة تضمن لك راحة البال</p>
+</div>
+<div class="relative flex flex-col md:flex-row justify-between items-start gap-stack-xl">
+<!-- Step 1 -->
+<div class="flex-1 text-center relative z-10 group">
+<div class="w-20 h-20 bg-surface-container flex items-center justify-center rounded-full mx-auto mb-6 text-3xl font-display-lg text-secondary group-hover:bg-secondary-container group-hover:text-white transition-all duration-300">1</div>
+<h3 class="font-headline-ar text-xl mb-2">تأكد من المنتج</h3>
+<p class="text-on-surface-variant">قم بمسح الكود أو إدخال الرقم التسلسلي للتحقق من الأصالة.</p>
+</div>
+<!-- Connector 1 -->
+<div class="hidden md:block absolute top-10 left-[33%] right-[66%] h-0.5 bg-surface-variant"></div>
+<!-- Step 2 -->
+<div class="flex-1 text-center relative z-10 group">
+<div class="w-20 h-20 bg-surface-container flex items-center justify-center rounded-full mx-auto mb-6 text-3xl font-display-lg text-secondary group-hover:bg-secondary-container group-hover:text-white transition-all duration-300">2</div>
+<h3 class="font-headline-ar text-xl mb-2">استلام وفحص</h3>
+<p class="text-on-surface-variant">يسلم فريقنا جهازك ويبدأ فوراً في فحص العطل بدقة عالية.</p>
+</div>
+<!-- Connector 2 -->
+<div class="hidden md:block absolute top-10 right-[33%] left-[66%] h-0.5 bg-surface-variant"></div>
+<!-- Step 3 -->
+<div class="flex-1 text-center relative z-10 group">
+<div class="w-20 h-20 bg-surface-container flex items-center justify-center rounded-full mx-auto mb-6 text-3xl font-display-lg text-secondary group-hover:bg-secondary-container group-hover:text-white transition-all duration-300">3</div>
+<h3 class="font-headline-ar text-xl mb-2">متابعة لحظية</h3>
+<p class="text-on-surface-variant">تلقى إشعارات مباشرة حول حالة الإصلاح وموعد استلام جهازك.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Metrics -->
+<section class="bg-primary py-stack-lg">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-stack-lg text-center">
+<div class="space-y-2">
+<p class="font-display-lg text-secondary-container text-5xl">+15</p>
+<p class="text-white font-headline-ar text-lg">عاماً من الخبرة التقنية</p>
+</div>
+<div class="space-y-2 border-y md:border-y-0 md:border-x border-white/10 py-stack-md md:py-0">
+<p class="font-display-lg text-secondary-container text-5xl">+100,000</p>
+<p class="text-white font-headline-ar text-lg">منتج مخدوم بنجاح</p>
+</div>
+<div class="space-y-2">
+<p class="font-display-lg text-secondary-container text-5xl">98%</p>
+<p class="text-white font-headline-ar text-lg">نسبة رضا العملاء</p>
+</div>
+</div>
+</section>
+<!-- FAQ Section -->
+<section class="py-stack-xl bg-surface">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-stack-xl">
+<h2 class="font-headline-ar text-headline-ar">الأسئلة الشائعة</h2>
+</div>
+<div class="max-w-3xl mx-auto space-y-4">
+<details class="bg-white rounded-xl border border-surface-variant/50 p-6 group open:border-secondary-container transition-all">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-headline-ar text-lg">كيف يمكنني تفعيل الضمان لمنتج جديد؟</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="mt-4 text-on-surface-variant border-t border-surface-variant/30 pt-4">
+                        يمكنك تفعيل الضمان عبر إدخال الرقم التسلسلي الموجود على العلبة في قسم "تفعيل الضمان" بموقعنا أو زيارة أقرب فرع لـ MTC GROUP.
+                    </div>
+</details>
+<details class="bg-white rounded-xl border border-surface-variant/50 p-6 group open:border-secondary-container transition-all">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-headline-ar text-lg">ما هي المدة المستغرقة لصيانة الأجهزة؟</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="mt-4 text-on-surface-variant border-t border-surface-variant/30 pt-4">
+                        تستغرق عملية الفحص عادة من 24 إلى 48 ساعة، ويتم إعلامك بالمدة المتوقعة للإصلاح فور الانتهاء من الفحص الفني الأولي.
+                    </div>
+</details>
+<details class="bg-white rounded-xl border border-surface-variant/50 p-6 group open:border-secondary-container transition-all">
+<summary class="flex justify-between items-center cursor-pointer list-none">
+<span class="font-headline-ar text-lg">هل يتوفر لديكم قطع غيار أصلية لكل المنتجات؟</span>
+<span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<div class="mt-4 text-on-surface-variant border-t border-surface-variant/30 pt-4">
+                        نعم، كمركز صيانة معتمد من MTC GROUP، نستخدم فقط قطع الغيار الأصلية الواردة مباشرة من Kieslect لضمان أعلى جودة.
+                    </div>
+</details>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-stack-xl">
+<div class="bg-secondary-container rounded-[2rem] p-12 md:p-20 text-center relative overflow-hidden group">
+<div class="relative z-10 space-y-stack-md">
+<h2 class="font-headline-ar text-4xl md:text-5xl text-white">هل أنت جاهز لتجربة خدمة مختلفة؟</h2>
+<p class="text-white/90 text-lg max-w-xl mx-auto">انضم إلى مجتمع مستخدمي Kieslect في مصر وتمتع بدعم لا ينقطع.</p>
+<button class="mt-8 bg-primary text-white px-12 py-4 rounded-xl font-headline-ar text-xl hover:bg-white hover:text-primary transition-all shadow-xl">
+                    انضم إلينا الآن
+                </button>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-highest py-stack-xl">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto rtl items-start">
+<div class="space-y-6">
+<div class="flex flex-col">
+<span class="font-display-lg text-primary text-3xl">ECTRA<span class="text-secondary-container">.</span></span>
+<span class="text-sm font-label-mono text-on-surface-variant">BY KIESLECT EGYPT</span>
+</div>
+<p class="text-on-surface-variant">الوجهة الرسمية لمنتجات Kieslect وخدمات الصيانة المعتمدة في جمهورية مصر العربية بإدارة مجموعة MTC.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-secondary-container hover:text-white transition-all duration-300 shadow-sm" href="#"><span class="material-symbols-outlined text-sm">face_nod</span></a>
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-secondary-container hover:text-white transition-all duration-300 shadow-sm" href="#"><span class="material-symbols-outlined text-sm">alternate_email</span></a>
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-secondary-container hover:text-white transition-all duration-300 shadow-sm" href="#"><span class="material-symbols-outlined text-sm">phone</span></a>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-stack-lg">
+<div class="space-y-4">
+<h4 class="font-bold text-primary mb-4">روابط سريعة</h4>
+<ul class="space-y-3">
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">عن الشركة</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">خدماتنا</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">تفعيل الضمان</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">تتبع الصيانة</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold text-primary mb-4">قانوني</h4>
+<ul class="space-y-3">
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">سياسة الخصوصية</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">الشروط والأحكام</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary-container transition-all" href="#">سياسة الاسترجاع</a></li>
+</ul>
+</div>
+</div>
+<div class="space-y-6">
+<h4 class="font-bold text-primary mb-4">تواصل معنا</h4>
+<div class="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+<p class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary-container">location_on</span>
+                        بإدارة MTC GROUP · بنها، مصر
+                    </p>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-secondary-container transition-all" href="https://wa.me/20123456789">
+<span class="material-symbols-outlined text-secondary-container">chat</span>
+                        تواصل عبر الواتساب
+                    </a>
+</div>
+<div class="pt-4 border-t border-surface-variant/30">
+<p class="text-sm text-on-surface-variant">© ٢٠٢٤ ECTRA - إحدى شركات مجموعة MTC - بنها</p>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions and scroll effects
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.querySelector('nav');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    nav.classList.add('py-2', 'shadow-md');
+                    nav.classList.remove('py-4', 'shadow-sm');
+                } else {
+                    nav.classList.add('py-4', 'shadow-sm');
+                    nav.classList.remove('py-2', 'shadow-md');
+                }
+            });
+
+            // Smooth reveal for details/FAQ
+            const details = document.querySelectorAll('details');
+            details.forEach(detail => {
+                detail.addEventListener('toggle', () => {
+                    if (detail.open) {
+                        details.forEach(d => {
+                            if (d !== detail) d.open = false;
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+<script>
+  // أي زر/رابط في اللاندينج ينقل المستخدم لشاشة الدخول داخل التطبيق
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('a,button') : null;
+    if (t) { e.preventDefault(); if (window.parent) { window.parent.postMessage('ectra-enter', '*'); } }
+  }, true);
+</script>
+</body></html>

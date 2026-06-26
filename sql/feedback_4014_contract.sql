@@ -1,0 +1,31 @@
+-- ============================================================
+-- ECTRA 4014 — تعاقد دوال التقييمات اللي الواجهة بتناديها
+-- ============================================================
+-- ملاحظة مهمة: دوال قاعدة البيانات دي مفروض مطبّقة Live بالفعل.
+-- الملف ده "توثيق" مش سكربت تشغيل — متشغّلوش إلا لو ظهر خطأ إن
+-- الدالة غير موجودة أو أسماء البراميترات مختلفة، وقتها اعمل
+-- المطابقة في Supabase حسب التواقيع اللي تحت.
+--
+-- الواجهة (Frontend) بتنادي الدوال دي بالظبط:
+--
+-- 1) صفحة العميل — قسم «آراء العملاء» (SupportCenter.jsx):
+--    rpc: ectra_feedback_public
+--    args: { p_limit:int, p_offset:int }
+--    لازم ترجّع صفوف فيها الأعمدة:
+--      id, customer_name (مُقنّع لو رقم موبايل), rating, message, created_at, total
+--    وتعرض is_public = true فقط، وترتيب الأحدث أولاً، وتُخفي العمود reference.
+--    العمود "total" = إجمالي عدد الآراء المنشورة (لحساب عدد الصفحات).
+--
+-- 2) الأدمن — زر إظهار/إخفاء (EctraServiceCenter.jsx → FeedbackView):
+--    rpc: ectra_feedback_set_public
+--    args: { p_token, p_id, p_public:boolean }
+--    بتقلب حالة is_public للتقييم المحدد (بعد التحقق من التوكن).
+--
+-- 3) إرسال التقييم (مطبّق Live بالفعل): ectra_feedback_submit
+--    args: { p_customer_name, p_reference, p_rating, p_message }
+--    بترجّع uuid للتقييم الجديد (إصلاح إصدار 4014 — مش محتاج إعادة تنفيذ).
+--
+-- لو احتجت تتأكد إن العمود موجود (idempotent وآمن):
+--   alter table public.ectra_feedback
+--     add column if not exists is_public boolean not null default true;
+-- ============================================================
