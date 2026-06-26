@@ -5,7 +5,7 @@ import {
   Headphones, BatteryCharging, BadgeCheck, Users as UsersIcon, ShieldCheck,
   Trash2, Pencil, Plus, X, Loader2, KeyRound, LogOut, Lock, LogIn, Database, Upload, Download,
   ScanLine, ListPlus, Sun, Moon, ClipboardList, RefreshCw, Layers, Hash, Star, MessageSquare,
-  Eye, EyeOff,
+  Eye, EyeOff, Store, Truck, Minus,
 } from "lucide-react";
 import warrantyStamp from "./assets/warranty-stamp.png";
 import * as XLSX from "xlsx";
@@ -80,6 +80,7 @@ const MENU_CATALOG = [
   { key: "products", label: "قاعدة البيانات", buttons: [{ key: "add", label: "إضافة منتج" }, { key: "edit", label: "تعديل" }, { key: "delete", label: "حذف" }, { key: "import", label: "استيراد Excel" }, { key: "template", label: "تنزيل القالب" }] },
   { key: "warranties", label: "قائمة الضمانات", buttons: [{ key: "view", label: "عرض الضمانات" }, { key: "edit", label: "تعديل الشهادة" }, { key: "delete", label: "حذف الشهادة" }] },
   { key: "feedback", label: "التقييمات", buttons: [{ key: "view", label: "عرض" }, { key: "delete", label: "حذف" }] },
+  { key: "pos", label: "مبيعات لنقطة بيع", buttons: [{ key: "managePos", label: "إدارة نقاط البيع" }, { key: "delivery", label: "أوامر تسليم البضاعة" }] },
 ];
 const blankPerms = () => {
   const p = {};
@@ -154,6 +155,7 @@ export default function App() {
           {view === "products" && <CatalogView />}
           {view === "warranties" && <WarrantiesView onIssue={() => setView("warranty")} />}
           {view === "feedback" && <FeedbackView />}
+          {view === "pos" && <PosView />}
           <p style={{ textAlign: "center", color: C.muted, fontSize: 12.5, marginTop: 26 }}>مركز خدمة MTC GROUP — موزّع معتمد لمنتجات ECTRA · بنها</p>
         </div>
       )}
@@ -334,6 +336,7 @@ function Home({ go }) {
     { id: "products", icon: Database, title: "قاعدة البيانات", desc: "الأصناف والأقسام والأرقام المسلسلة لكل المنتجات المسجّلة" },
     { id: "warranties", icon: Award, title: "قائمة الضمانات", desc: "عرض كل شهادات الضمان المُصدَرة وإصدار شهادة جديدة" },
     { id: "feedback", icon: Star, title: "التقييمات", desc: "تقييمات العملاء بالنجوم وملاحظاتهم عن المنتجات والخدمة" },
+    { id: "pos", icon: Store, title: "مبيعات لنقطة بيع", desc: "إدارة نقاط البيع وتحويل كميات من الأصناف إليها بأوامر تسليم بالسيريالات" },
   ];
   const cards = allCards.filter((c) => canOpen(c.id));
   const firstName = (me?.name || "").split(" ")[0] || "بك";
@@ -806,8 +809,18 @@ function ekErrMsg(ex) {
   if (m.includes("name_exists")) return "الاسم موجود بالفعل";
   if (m.includes("name_required")) return "الاسم مطلوب";
   if (m.includes("serial_not_registered")) return "السيريال غير مسجّل في قاعدة البيانات — لا يمكن إصدار ضمان له";
+  if (m.includes("serial_delivered_to_pos")) return "هذا السيريال تم تسليمه لنقطة بيع — لا يمكن إصدار ضمان له";
   if (m.includes("serial_has_warranty")) { const mt = m.match(/serial_has_warranty:([A-Za-z0-9\-]+)/); return mt ? `هذا المنتج له شهادة ضمان بالفعل (${mt[1]}) — لا يمكن إصدار شهادة أخرى لنفس السيريال` : "هذا المنتج له شهادة ضمان بالفعل — لا يمكن إصدار شهادة أخرى لنفس السيريال"; }
   if (m.includes("item_not_found")) return "الصنف غير موجود";
+  if (m.includes("username_exists")) return "اسم المستخدم مستخدم بالفعل";
+  if (m.includes("email_exists")) return "البريد الإلكتروني مستخدم بالفعل";
+  if (m.includes("username_required")) return "اسم المستخدم مطلوب";
+  if (m.includes("password_required")) return "كلمة السر مطلوبة";
+  if (m.includes("pos_has_orders")) return "لا يمكن حذف نقطة البيع لوجود أوامر تسليم مرتبطة بها";
+  if (m.includes("pos_required")) return "اختر نقطة البيع";
+  if (m.includes("no_items") || m.includes("no_serials")) return "أضف صنف وسيريالات على الأقل";
+  { const a = m.match(/serial_already_delivered:([^"\\]+)/); if (a) return `السيريال (${a[1].trim()}) تم تسليمه بالفعل في أمر آخر`; }
+  { const b = m.match(/serial_not_found:([^"\\]+)/); if (b) return `السيريال (${b[1].trim()}) غير مسجّل لهذا الصنف`; }
   if (m.includes("unauthorized")) return "لا تملك صلاحية لهذا الإجراء";
   return "حدث خطأ: " + m.slice(0, 120);
 }
@@ -1166,6 +1179,59 @@ function go(){
 }
 if(document.readyState==='complete') go(); else window.addEventListener('load', go);
 <\/script></body></html>`;
+  win.document.open(); win.document.write(html); win.document.close();
+}
+
+function ekPrintDelivery(meta, lines) {
+  const win = window.open("", "_blank");
+  if (!win) { alert("اسمح بالنوافذ المنبثقة (Pop-ups) للطباعة"); return; }
+  const rows = (lines || []).map((l, i) => {
+    const serials = (l.serials || []).map((s) => `<span class="sn">${ekEsc(s)}</span>`).join("");
+    return `<div class="item"><div class="ihead"><span class="inum">${i + 1}</span><span class="iname">${ekEsc(l.item_name)}</span><span class="iqty">الكمية: ${(l.serials || []).length}</span></div><div class="serials">${serials}</div></div>`;
+  }).join("");
+  const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>أمر تسليم بضاعة</title>
+<style>
+*{box-sizing:border-box;font-family:'Tahoma','Arial',sans-serif;}
+@page{ size:A4; margin:14mm; }
+body{ margin:0; color:#16181D; }
+.top{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #16181D; padding-bottom:12px; margin-bottom:16px; }
+.brand{ font-family:'Archivo',Arial,sans-serif; font-weight:900; font-size:26px; letter-spacing:1px; }
+.brand .d{ color:#FF5A3C; }
+.subb{ font-size:11px; color:#666; font-weight:700; margin-top:2px; }
+.title{ text-align:left; }
+.title h1{ margin:0; font-size:19px; }
+.title .no{ font-size:11px; color:#666; margin-top:3px; font-family:monospace; }
+.meta{ display:grid; grid-template-columns:1fr 1fr; gap:6px 18px; background:#F7F8FA; border:1px solid #E4E7EC; border-radius:10px; padding:12px 14px; margin-bottom:16px; font-size:13px; }
+.meta b{ color:#16181D; } .meta span{ color:#555; }
+.note{ font-size:12.5px; color:#555; margin-bottom:14px; }
+.item{ border:1px solid #E4E7EC; border-radius:10px; padding:10px 12px; margin-bottom:10px; break-inside:avoid; }
+.ihead{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.inum{ width:22px; height:22px; border-radius:6px; background:#16181D; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; }
+.iname{ font-weight:800; font-size:14.5px; flex:1; }
+.iqty{ font-size:12px; color:#FF5A3C; font-weight:800; }
+.serials{ display:flex; flex-wrap:wrap; gap:6px; }
+.sn{ font-family:monospace; font-size:11.5px; font-weight:700; background:#F4F5F7; border:1px solid #E4E7EC; border-radius:6px; padding:4px 8px; }
+.total{ text-align:left; font-weight:800; font-size:14px; margin:8px 2px 22px; }
+.sign{ display:flex; justify-content:space-between; margin-top:34px; gap:40px; }
+.sign div{ flex:1; text-align:center; border-top:1.5px solid #999; padding-top:8px; font-size:12.5px; color:#555; }
+</style></head><body>
+<div class="top">
+  <div><div class="brand">ECTRA<span class="d">.</span></div><div class="subb">مركز خدمة · MTC GROUP</div></div>
+  <div class="title"><h1>أمر تسليم بضاعة</h1><div class="no">${ekEsc(meta.order_no || "")}</div></div>
+</div>
+<div class="meta">
+  <div><b>نقطة البيع:</b> <span>${ekEsc(meta.pos_name || "")}</span></div>
+  <div><b>التاريخ:</b> <span>${ekEsc(meta.date || "")}</span></div>
+  <div><b>عدد الأصناف:</b> <span>${meta.items_count}</span></div>
+  <div><b>إجمالي القطع:</b> <span>${meta.total_qty}</span></div>
+  ${meta.created_by ? `<div><b>المُصدِر:</b> <span>${ekEsc(meta.created_by)}</span></div>` : ""}
+</div>
+${meta.note ? `<div class="note"><b>ملاحظات:</b> ${ekEsc(meta.note)}</div>` : ""}
+${rows}
+<div class="total">الإجمالي: ${meta.total_qty} قطعة</div>
+<div class="sign"><div>توقيع المُسلِّم</div><div>توقيع المُستلِم (نقطة البيع)</div></div>
+<script>function go(){ setTimeout(function(){ window.focus(); window.print(); }, 200); } if(document.readyState==='complete') go(); else window.addEventListener('load', go);<\/script>
+</body></html>`;
   win.document.open(); win.document.write(html); win.document.close();
 }
 
@@ -1676,6 +1742,360 @@ function Switch({ on, onClick, small }) {
   const w = small ? 38 : 44, h = small ? 22 : 26, k = small ? 16 : 20;
   return <span onClick={onClick} style={{ width: w, height: h, borderRadius: h, background: on ? C.primary : "#D8D5D0", position: "relative", cursor: "pointer", transition: "background .2s", display: "inline-block", flexShrink: 0 }}><span style={{ position: "absolute", top: 3, right: on ? 3 : w - k - 3, width: k, height: k, borderRadius: "50%", background: "#fff", transition: "right .2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} /></span>;
 }
+/* ============================ مبيعات لنقطة بيع ============================ */
+function PosTabBtn({ active, onClick, icon: I, label }) {
+  return (
+    <button onClick={onClick} className="ek-btn" style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 16px", borderRadius: 12, border: `1.5px solid ${active ? C.primary : C.line}`, background: active ? C.primary : C.surface, color: active ? "#fff" : C.ink, fontWeight: 800, fontSize: 14, cursor: "pointer" }}>
+      <I size={17} /> {label}
+    </button>
+  );
+}
+
+function PosView() {
+  const [tab, setTab] = useState("pos");
+  return (
+    <div className="ek-fade">
+      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+        <PosTabBtn active={tab === "pos"} onClick={() => setTab("pos")} icon={Store} label="نقاط البيع" />
+        <PosTabBtn active={tab === "delivery"} onClick={() => setTab("delivery")} icon={Truck} label="أوامر تسليم البضاعة" />
+      </div>
+      {tab === "pos" ? <PosManage /> : <DeliveryManage />}
+    </div>
+  );
+}
+
+/* ----------- نقاط البيع (جديد / تعديل / مسح) ----------- */
+function PosManage() {
+  const { me } = useAuth();
+  const token = me.token;
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [edit, setEdit] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
+
+  const load = async () => { setLoading(true); try { setList(await sbRpc("ectra_pos_list", { p_token: token }) || []); } catch (ex) { alert(ekErrMsg(ex)); } finally { setLoading(false); } };
+  useEffect(() => { load(); }, []);
+  const del = async (id) => { try { await sbRpc("ectra_pos_delete", { p_token: token, p_id: id }); setConfirmId(null); await load(); } catch (ex) { alert(ekErrMsg(ex)); } };
+
+  return (
+    <Card>
+      <SectionHead title="نقاط البيع" count={list.length} onAdd={() => setEdit({ name: "", manager_name: "", phone: "", email: "", username: "", password: "", confirm: "" })} addLabel="نقطة بيع جديدة" />
+      {loading ? <Center><Loader2 size={26} className="spin" color={C.primary} /></Center> : (
+        <div style={{ display: "grid", gap: 10 }}>
+          {list.map((p) => (
+            <div key={p.id} style={rowCard()}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                <div style={{ width: 42, height: 42, borderRadius: 11, background: C.tint, display: "grid", placeItems: "center", color: C.primary }}><Store size={20} /></div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: 15 }}>{p.name}</div>
+                  <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2, display: "flex", flexWrap: "wrap", gap: "0 12px" }}>
+                    {p.manager_name && <span>المسؤول: {p.manager_name}</span>}
+                    {p.phone && <span style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{p.phone}</span>}
+                    {p.username && <span style={{ color: C.primary, fontWeight: 700 }}>@{p.username}</span>}
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <IconBtn onClick={() => setEdit({ id: p.id, name: p.name || "", manager_name: p.manager_name || "", phone: p.phone || "", email: p.email || "", username: p.username || "", password: "", confirm: "" })} icon={Pencil} />
+                {confirmId === p.id
+                  ? <button onClick={() => del(p.id)} className="ek-btn" style={{ ...iconBtnStyle(), width: "auto", padding: "0 12px", background: C.danger, color: "#fff", borderColor: C.danger, fontWeight: 700, fontSize: 12.5 }}>تأكيد</button>
+                  : <IconBtn onClick={() => setConfirmId(p.id)} icon={Trash2} danger />}
+              </div>
+            </div>
+          ))}
+          {!list.length && <Empty>لا توجد نقاط بيع بعد</Empty>}
+        </div>
+      )}
+      {edit && <PosEditor token={token} edit={edit} setEdit={setEdit} onSaved={async () => { setEdit(null); await load(); }} />}
+    </Card>
+  );
+}
+
+function PosEditor({ token, edit, setEdit, onSaved }) {
+  const [busy, setBusy] = useState(false);
+  const pwStyle = { width: "100%", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${C.line}`, fontSize: 15, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 2 };
+  const save = async () => {
+    if (!edit.name.trim()) { alert("اكتب اسم نقطة البيع"); return; }
+    if (!edit.id && !edit.username.trim()) { alert("اكتب اسم المستخدم"); return; }
+    if (!edit.id && !edit.password) { alert("اكتب كلمة السر"); return; }
+    if ((edit.password || "") !== (edit.confirm || "")) { alert("كلمتا السر غير متطابقتين"); return; }
+    setBusy(true);
+    try {
+      await sbRpc("ectra_pos_save", { p_token: token, p_id: edit.id || null, p_name: edit.name.trim(), p_manager_name: nz(edit.manager_name.trim()), p_phone: nz(edit.phone.trim()), p_email: nz(edit.email.trim()), p_username: nz(edit.username.trim()), p_password: edit.password || null });
+      await onSaved();
+    } catch (ex) { alert(ekErrMsg(ex)); } finally { setBusy(false); }
+  };
+  return (
+    <Modal title={edit.id ? "تعديل نقطة بيع" : "نقطة بيع جديدة"} onClose={() => setEdit(null)}>
+      <div style={{ display: "grid", gap: 14 }}>
+        <Field label="اسم نقطة البيع"><Input value={edit.name} onChange={(v) => setEdit({ ...edit, name: v })} placeholder="مثال: معرض المنصورة" /></Field>
+        <Field label="اسم المسؤول"><Input value={edit.manager_name} onChange={(v) => setEdit({ ...edit, manager_name: v })} placeholder="اسم الشخص المسؤول" /></Field>
+        <Field label="رقم التليفون"><Input value={edit.phone} onChange={(v) => setEdit({ ...edit, phone: v })} placeholder="اختياري" inputMode="numeric" mono /></Field>
+        <Field label="البريد الإلكتروني"><Input value={edit.email} onChange={(v) => setEdit({ ...edit, email: v })} placeholder="example@mail.com" type="email" mono /></Field>
+        <div style={{ height: 1, background: C.line, margin: "2px 0" }} />
+        <div style={{ fontSize: 13, color: C.muted, fontWeight: 700, marginBottom: -4 }}>بيانات الدخول للنظام</div>
+        <Field label="اسم المستخدم (username)"><Input value={edit.username} onChange={(v) => setEdit({ ...edit, username: v })} placeholder="username" mono /></Field>
+        <Field label={edit.id ? "كلمة السر (اتركها فارغة لعدم التغيير)" : "كلمة السر"}>
+          <input type="password" value={edit.password} onChange={(e) => setEdit({ ...edit, password: e.target.value })} placeholder="••••••" style={pwStyle} />
+        </Field>
+        <Field label="تأكيد كلمة السر">
+          <input type="password" value={edit.confirm} onChange={(e) => setEdit({ ...edit, confirm: e.target.value })} placeholder="••••••" style={pwStyle} />
+        </Field>
+      </div>
+      <ModalActions onCancel={() => setEdit(null)} onSave={save} busy={busy} />
+    </Modal>
+  );
+}
+
+/* ----------- أوامر تسليم البضاعة (جديد / تعديل / مسح) ----------- */
+function DeliveryManage() {
+  const { me } = useAuth();
+  const token = me.token;
+  const [list, setList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [edit, setEdit] = useState(null);
+  const [confirmId, setConfirmId] = useState(null);
+
+  const load = async () => { setLoading(true); try { setList(await sbRpc("ectra_delivery_list", { p_token: token }) || []); } catch (ex) { alert(ekErrMsg(ex)); } finally { setLoading(false); } };
+  useEffect(() => { load(); }, []);
+  const del = async (id) => { try { await sbRpc("ectra_delivery_delete", { p_token: token, p_id: id }); setConfirmId(null); await load(); } catch (ex) { alert(ekErrMsg(ex)); } };
+  const fmtDate = (s) => { try { return new Date(s).toLocaleDateString("ar-EG", { year: "numeric", month: "short", day: "numeric" }); } catch { return ""; } };
+  const printOrder = async (o) => {
+    try {
+      const d = await sbRpc("ectra_delivery_get", { p_token: token, p_id: o.id });
+      ekPrintDelivery({
+        order_no: "#" + String(o.id).slice(0, 8).toUpperCase(),
+        pos_name: o.pos_name, date: fmtDate(o.created_at),
+        items_count: Number(o.items_count), total_qty: Number(o.total_qty),
+        created_by: o.created_by_name, note: o.note,
+      }, (d && d.lines) || []);
+    } catch (ex) { alert(ekErrMsg(ex)); }
+  };
+
+  return (
+    <Card>
+      <SectionHead title="أوامر التسليم" count={list.length} onAdd={() => setEdit({ _new: true })} addLabel="أمر تسليم جديد" />
+      {loading ? <Center><Loader2 size={26} className="spin" color={C.primary} /></Center> : (
+        <div style={{ display: "grid", gap: 10 }}>
+          {list.map((o) => (
+            <div key={o.id} style={rowCard()}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                <div style={{ width: 42, height: 42, borderRadius: 11, background: C.tint, display: "grid", placeItems: "center", color: C.primary }}><Truck size={20} /></div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: 15 }}>{o.pos_name}</div>
+                  <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2, display: "flex", flexWrap: "wrap", gap: "0 12px" }}>
+                    <span>{Number(o.items_count)} صنف</span>
+                    <span style={{ color: C.primary, fontWeight: 700 }}>{Number(o.total_qty)} قطعة</span>
+                    <span>{fmtDate(o.created_at)}</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <IconBtn onClick={() => printOrder(o)} icon={Printer} title="طباعة أمر التسليم" />
+                <IconBtn onClick={() => setEdit({ id: o.id })} icon={Pencil} />
+                {confirmId === o.id
+                  ? <button onClick={() => del(o.id)} className="ek-btn" style={{ ...iconBtnStyle(), width: "auto", padding: "0 12px", background: C.danger, color: "#fff", borderColor: C.danger, fontWeight: 700, fontSize: 12.5 }}>تأكيد</button>
+                  : <IconBtn onClick={() => setConfirmId(o.id)} icon={Trash2} danger />}
+              </div>
+            </div>
+          ))}
+          {!list.length && <Empty>لا توجد أوامر تسليم بعد</Empty>}
+        </div>
+      )}
+      {edit && <DeliveryEditor token={token} orderId={edit.id || null} onClose={() => setEdit(null)} onSaved={async () => { setEdit(null); await load(); }} />}
+    </Card>
+  );
+}
+
+function DeliveryEditor({ token, orderId, onClose, onSaved }) {
+  const [posId, setPosId] = useState("");
+  const [note, setNote] = useState("");
+  const [lines, setLines] = useState([]); // {item_id, item_name, available, qty, serials:[]}
+  const [posOpts, setPosOpts] = useState([]);
+  const [itemOpts, setItemOpts] = useState([]);
+  const [pickItem, setPickItem] = useState(false);
+  const [itemQuery, setItemQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const [pos, items] = await Promise.all([
+          sbRpc("ectra_pos_list", { p_token: token }),
+          sbRpc("ectra_delivery_item_options", { p_token: token }),
+        ]);
+        setPosOpts(pos || []);
+        setItemOpts(items || []);
+        if (orderId) {
+          const o = await sbRpc("ectra_delivery_get", { p_token: token, p_id: orderId });
+          setPosId(o.pos_id || "");
+          setNote(o.note || "");
+          setLines((o.lines || []).map((l) => ({ item_id: l.item_id, item_name: l.item_name, available: null, qty: (l.serials || []).length, serials: l.serials || [] })));
+        }
+      } catch (ex) { alert(ekErrMsg(ex)); } finally { setLoading(false); }
+    })();
+  }, []);
+
+  const addItem = (it) => {
+    if (lines.some((l) => l.item_id === it.id)) { setPickItem(false); return; }
+    setLines([...lines, { item_id: it.id, item_name: it.name, available: Number(it.available), qty: 1, serials: [] }]);
+    setPickItem(false); setItemQuery("");
+  };
+  const updateLine = (idx, patch) => setLines(lines.map((l, i) => (i === idx ? { ...l, ...patch } : l)));
+  const removeLine = (idx) => setLines(lines.filter((_, i) => i !== idx));
+
+  const save = async () => {
+    if (!posId) { alert("اختر نقطة البيع"); return; }
+    if (!lines.length) { alert("أضف صنف واحد على الأقل"); return; }
+    for (const l of lines) {
+      if (!l.serials.length) { alert(`أدخل سيريالات الصنف «${l.item_name}»`); return; }
+      if (l.serials.length !== l.qty) { alert(`عدد السيريالات للصنف «${l.item_name}» (${l.serials.length}) لا يساوي الكمية المطلوبة (${l.qty})`); return; }
+    }
+    setBusy(true);
+    try {
+      await sbRpc("ectra_delivery_save", { p_token: token, p_id: orderId, p_pos_id: posId, p_note: nz(note.trim()), p_lines: lines.map((l) => ({ item_id: l.item_id, serials: l.serials })) });
+      await onSaved();
+    } catch (ex) { alert(ekErrMsg(ex)); } finally { setBusy(false); }
+  };
+
+  const filteredItems = itemOpts.filter((i) => !itemQuery.trim() || (i.name || "").toLowerCase().includes(itemQuery.trim().toLowerCase()));
+
+  return (
+    <Modal title={orderId ? "تعديل أمر تسليم" : "أمر تسليم جديد"} onClose={onClose} wide>
+      {loading ? <Center><Loader2 size={26} className="spin" color={C.primary} /></Center> : (
+        <div style={{ display: "grid", gap: 16 }}>
+          <Field label="نقطة البيع">
+            <select value={posId} onChange={(e) => setPosId(e.target.value)} style={ekSelectStyle}>
+              <option value="">— اختر نقطة البيع —</option>
+              {posOpts.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </Field>
+
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <span style={{ fontSize: 13.5, fontWeight: 700, color: C.ink }}>الأصناف</span>
+              <button onClick={() => setPickItem(true)} className="ek-btn" style={{ display: "flex", alignItems: "center", gap: 5, padding: "8px 12px", borderRadius: 10, border: "none", background: C.primary, color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}><Plus size={15} /> إضافة صنف</button>
+            </div>
+            {!lines.length && <Empty>لم تتم إضافة أصناف بعد</Empty>}
+            <div style={{ display: "grid", gap: 14 }}>
+              {lines.map((l, idx) => (
+                <DeliveryLine key={l.item_id} token={token} line={l} onChange={(patch) => updateLine(idx, patch)} onRemove={() => removeLine(idx)} />
+              ))}
+            </div>
+          </div>
+
+          <Field label="ملاحظات (اختياري)"><Input value={note} onChange={setNote} placeholder="ملاحظة على أمر التسليم" /></Field>
+        </div>
+      )}
+      <ModalActions onCancel={onClose} onSave={save} busy={busy} />
+
+      {pickItem && (
+        <Modal title="اختر صنف" onClose={() => setPickItem(false)}>
+          <Input value={itemQuery} onChange={setItemQuery} placeholder="ابحث بالاسم أو جزء منه" />
+          <div style={{ display: "grid", gap: 8, marginTop: 12, maxHeight: 320, overflowY: "auto" }}>
+            {filteredItems.map((it) => {
+              const used = lines.some((l) => l.item_id === it.id);
+              return (
+                <button key={it.id} onClick={() => !used && addItem(it)} disabled={used} className="ek-btn" style={{ textAlign: "right", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${C.line}`, background: used ? C.field : C.surface, cursor: used ? "default" : "pointer", opacity: used ? 0.55 : 1 }}>
+                  <div style={{ fontWeight: 800, fontSize: 14.5 }}>{it.name}</div>
+                  <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{it.model ? `موديل: ${it.model} · ` : ""}متاح: {Number(it.available)} {used ? "· مُضاف" : ""}</div>
+                </button>
+              );
+            })}
+            {!filteredItems.length && <Empty>لا توجد أصناف مطابقة</Empty>}
+          </div>
+        </Modal>
+      )}
+    </Modal>
+  );
+}
+
+function DeliveryLine({ token, line, onChange, onRemove }) {
+  const [term, setTerm] = useState("");
+  const [sugs, setSugs] = useState([]);
+  const [scan, setScan] = useState(false);
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      const q = term.trim();
+      if (q.length < 2) { setSugs([]); return; }
+      setSearching(true);
+      try {
+        const r = await sbRpc("ectra_delivery_unit_search", { p_token: token, p_item_id: line.item_id, p_term: q }) || [];
+        setSugs(r.filter((x) => !line.serials.includes(x.serial)).slice(0, 8));
+      } catch { setSugs([]); } finally { setSearching(false); }
+    }, 280);
+    return () => clearTimeout(t);
+  }, [term, line.serials]);
+
+  const addSerial = async (s) => {
+    const v = String(s || "").trim();
+    if (!v) return;
+    if (line.serials.some((x) => x.toUpperCase() === v.toUpperCase())) { setTerm(""); setSugs([]); return; }
+    // تحقق أن السيريال متاح لهذا الصنف
+    try {
+      const r = await sbRpc("ectra_delivery_unit_search", { p_token: token, p_item_id: line.item_id, p_term: v }) || [];
+      const hit = r.find((x) => x.serial.toUpperCase() === v.toUpperCase());
+      if (!hit) { alert("السيريال غير متاح أو غير مسجّل لهذا الصنف"); return; }
+      const serials = [...line.serials, hit.serial];
+      onChange({ serials, qty: Math.max(line.qty, serials.length) });
+      setTerm(""); setSugs([]);
+    } catch (ex) { alert(ekErrMsg(ex)); }
+  };
+  const removeSerial = (s) => onChange({ serials: line.serials.filter((x) => x !== s) });
+  const setQty = (n) => { const q = Math.max(1, Math.min(9999, n || 0)); onChange({ qty: Math.max(q, line.serials.length) }); };
+
+  return (
+    <div style={{ border: `1.5px solid ${C.line}`, borderRadius: 16, padding: 14, background: C.surface }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <div style={{ fontWeight: 800, fontSize: 14.5 }}>{line.item_name}{line.available != null && <span style={{ fontSize: 11.5, color: C.muted, fontWeight: 600 }}> · متاح {line.available}</span>}</div>
+        <button onClick={onRemove} title="حذف الصنف" style={{ width: 30, height: 30, borderRadius: 8, border: `1.5px solid #F5C6C6`, background: C.surface, color: C.danger, cursor: "pointer", display: "grid", placeItems: "center" }}><X size={15} /></button>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: C.muted }}>الكمية</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => setQty(line.qty - 1)} className="ek-btn" style={qtyBtn}><Minus size={15} /></button>
+          <input value={line.qty} onChange={(e) => setQty(parseInt(e.target.value.replace(/\D/g, "")) || 0)} inputMode="numeric" style={{ width: 56, textAlign: "center", padding: "9px 6px", borderRadius: 10, border: `1.5px solid ${C.line}`, fontSize: 15, fontWeight: 800, fontFamily: "'IBM Plex Mono', monospace" }} />
+          <button onClick={() => setQty(line.qty + 1)} className="ek-btn" style={qtyBtn}><Plus size={15} /></button>
+        </div>
+        <span style={{ fontSize: 12.5, color: line.serials.length === line.qty ? "#16A34A" : C.muted, fontWeight: 700, marginInlineStart: "auto" }}>تم إدخال {line.serials.length} من {line.qty}</span>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, position: "relative" }}>
+        <input value={term} onChange={(e) => setTerm(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSerial(term); } }} placeholder="امسح الباركود أو اكتب جزء من السيريال" style={{ flex: 1, padding: "11px 13px", borderRadius: 11, border: `1.5px solid ${C.line}`, fontSize: 14, fontFamily: "'IBM Plex Mono', monospace" }} />
+        <button onClick={() => setScan(true)} className="ek-btn" title="مسح بالكاميرا" style={{ ...iconBtnStyle(), width: 44, color: C.primary }}><ScanLine size={18} /></button>
+      </div>
+
+      {(searching || sugs.length > 0) && (
+        <div style={{ marginTop: 8, border: `1px solid ${C.line}`, borderRadius: 12, overflow: "hidden" }}>
+          {searching && <div style={{ padding: "8px 12px", fontSize: 12.5, color: C.muted }}>جارٍ البحث…</div>}
+          {sugs.map((s) => (
+            <button key={s.unit_id} onClick={() => addSerial(s.serial)} className="ek-btn" style={{ display: "block", width: "100%", textAlign: "right", padding: "10px 13px", border: "none", borderBottom: `1px solid ${C.line}`, background: C.surface, cursor: "pointer", fontSize: 13.5, fontFamily: "'IBM Plex Mono', monospace" }}>{s.serial}</button>
+          ))}
+        </div>
+      )}
+
+      {line.serials.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 12 }}>
+          {line.serials.map((s) => (
+            <span key={s} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 9, background: C.tint, color: C.ink, fontSize: 12.5, fontWeight: 700, fontFamily: "'IBM Plex Mono', monospace" }}>
+              {s}<button onClick={() => removeSerial(s)} style={{ border: "none", background: "transparent", cursor: "pointer", color: C.danger, display: "grid", placeItems: "center", padding: 0 }}><X size={13} /></button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {scan && <ScannerModal onClose={() => setScan(false)} onResult={(v) => { setScan(false); addSerial(v); }} />}
+    </div>
+  );
+}
+const qtyBtn = { width: 36, height: 36, borderRadius: 10, border: `1.5px solid ${C.line}`, background: C.surface, cursor: "pointer", display: "grid", placeItems: "center", color: C.ink };
+
+
 function Modal({ title, onClose, children, wide }) {
   return <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,20,20,0.5)", display: "grid", placeItems: "center", padding: 16, zIndex: 50 }}>
     <div onClick={(e) => e.stopPropagation()} className="ek-fade" style={{ background: C.surface, borderRadius: 20, padding: "20px 18px", width: "100%", maxWidth: wide ? 520 : 420, maxHeight: "88vh", overflowY: "auto" }}>
