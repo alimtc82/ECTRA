@@ -821,6 +821,7 @@ function ekErrMsg(ex) {
   if (m.includes("name_exists")) return "الاسم موجود بالفعل";
   if (m.includes("name_required")) return "الاسم مطلوب";
   if (m.includes("serial_not_registered")) return "السيريال غير مسجّل في قاعدة البيانات — لا يمكن إصدار ضمان له";
+  if (m.includes("not_your_warranty")) return "لا يمكنك حذف ضمان لم تُصدره نقطة بيعك";
   if (m.includes("serial_belongs_other_pos")) return "هذا السيريال مُسلَّم لنقطة بيع أخرى — لا يمكنك إصدار ضمان له";
   if (m.includes("serial_not_yours")) return "هذا السيريال غير مُسلَّم لنقطة بيعك — لا يمكنك إصدار ضمان له";
   if (m.includes("serial_delivered_to_pos")) return "هذا السيريال تم تسليمه لنقطة بيع — لا يمكن إصدار ضمان له";

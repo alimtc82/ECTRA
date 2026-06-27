@@ -72,3 +72,7 @@ create index if not exists ectra_delivery_serials_order_idx on public.ectra_deli
 
 -- ===== (4027) تسجيل الدخول غير حسّاس لحالة الأحرف في اسم المستخدم =====
 -- ectra_login: where lower(u.username)=lower(btrim(p_username))  (كان حسّاسًا للحالة، فـ Amgad1 ≠ amgad1)
+
+-- ===== (4028) كتالوج نقطة البيع مفلتر + حذف ضمان مقصور على المُصدِر =====
+-- ectra_item_list / ectra_unit_list / ectra_section_list: مستخدم نقطة البيع يرى الأصناف/السريالات/الأقسام المُسلَّمة له فقط (الأدمن يرى الكل).
+-- ectra_warranty_delete: نقطة البيع تحذف ما أصدرته فقط (created_by = uid)، المركز يحذف أي شيء — والصلاحية warranties.delete لازمة.
