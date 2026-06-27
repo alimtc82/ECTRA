@@ -58,3 +58,14 @@ create index if not exists ectra_delivery_serials_order_idx on public.ectra_deli
 --             join public.ectra_delivery_serials ds on ds.unit_id=u.id
 --             where upper(btrim(u.serial))=upper(btrim(p_serial)))
 --     then raise exception 'serial_delivered_to_pos'; end if;
+
+-- ===== (4024) ربط الضمان بمُصدِره + تخصيص السيريال المُسلَّم لنقطة بيعه =====
+-- alter table public.ectra_warranties add column if not exists created_by uuid;
+-- ectra_warranty_issue: السيريال المُسلَّم لنقطة بيع → فقط مستخدم تلك النقطة يصدر له ضمان
+--   (وإلا serial_belongs_other_pos)؛ ومستخدم نقطة بيع لا يصدر لسيريال غير مُسلَّم له (serial_not_yours).
+-- ectra_warranty_page / ectra_warranty_list: مستخدم نقطة البيع يرى ضماناته فقط (created_by = uid).
+
+-- ===== (4025) اسم نقطة البيع على الشهادة وفي قائمة الضمانات =====
+-- ectra_login: يرجّع pos_name (اسم نقطة البيع للمستخدم إن كان نقطة بيع).
+-- ectra_warranty_page: يرجّع sold_by (اسم نقطة البيع المُصدِرة لكل ضمان) — للأدمن لرؤية الكل مع الاسم.
+-- ملاحظة: الضمانات الصادرة قبل عمود created_by تظهر sold_by = null.

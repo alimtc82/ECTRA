@@ -39,7 +39,8 @@ async function sbDelete(table, id) {
 async function sbRpc(fn, args) {
   const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: "POST", headers: H, body: JSON.stringify(args) });
   if (!r.ok) throw new Error(await r.text());
-  return r.json();
+  const t = await r.text();
+  return t ? JSON.parse(t) : null;
 }
 
 // ===== نظام الثيم (فاتح/غامق) — مبني على هوية ECTRA من Stitch =====
@@ -408,7 +409,7 @@ function Warranty() {
     if (step === 1) { if (!d.name.trim()) e.name = "اكتب اسم العميل"; if (!d.model) e.model = "اختر الموديل"; if (!d.serial.trim()) e.serial = "الرقم المسلسل مطلوب ولازم يكون مسجّل في القاعدة"; }
     setErr(e); if (Object.keys(e).length) return;
     if (step === 1) {
-      const c = { no: code("WC-EC-"), start: d.purchase || new Date().toISOString().slice(0, 10), end: addYear(d.purchase), ...d };
+      const c = { no: code("WC-EC-"), start: d.purchase || new Date().toISOString().slice(0, 10), end: addYear(d.purchase), soldBy: me.pos_name || null, ...d };
       setSaving(true); setApiErr("");
       try {
         await sbRpc("ectra_warranty_issue", { p_token: me.token, p_cert_no: c.no, p_customer_name: d.name, p_whatsapp: d.wa, p_model: d.model, p_serial: nz(d.serial), p_purchase_date: nz(d.purchase), p_start_date: c.start, p_end_date: c.end });
@@ -500,6 +501,15 @@ function CertificateResult({ cert }) {
         <div style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 8, background: C.ink, color: "#fff", fontSize: 11.5, fontWeight: 700, marginBottom: 12 }}><BadgeCheck size={13} color={C.primary} /> منتج أصلي · شهادة ضمان</div>
         <CertRow k="العميل" v={cert.name} /><CertRow k="المنتج" v={cert.model} mono />{cert.serial && <CertRow k="الرقم التسلسلي" v={cert.serial} mono />}
         <CertRow k="تاريخ بداية الضمان" v={cert.start} /><CertRow k="ساري حتى" v={cert.end} highlight />
+        {cert.soldBy && (
+          <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 12, background: C.tint, border: "1px solid #F6D7CE", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ fontSize: 13.5 }}><span style={{ color: C.muted }}>تم البيع بواسطة: </span><span style={{ fontWeight: 800, color: C.ink }}>{cert.soldBy}</span></div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "#fff", border: `1.5px solid ${C.primary}`, whiteSpace: "nowrap" }}>
+              <ShieldCheck size={18} color={C.primary} />
+              <span style={{ lineHeight: 1.1 }}><span style={{ display: "block", fontSize: 12.5, fontWeight: 800, color: C.primaryDark }}>نقطة بيع معتمدة</span><span style={{ display: "block", fontSize: 9, fontWeight: 700, color: C.muted, letterSpacing: 0.4 }}>AUTHORIZED POS</span></span>
+            </div>
+          </div>
+        )}
         <div className="ek-cert-foot">
           <div className="ek-cert-terms" style={{ padding: "10px 14px", background: C.bg, borderRadius: 10, fontSize: 12.5, color: C.muted, lineHeight: 1.7 }}>ضمان لمدة 12 شهر ضد عيوب الصناعة. لا يشمل سوء الاستخدام أو الكسر. الشهادة صالحة بإبراز رقمها لدى مركز الخدمة.</div>
           <div className="ek-cert-stamp">
@@ -809,6 +819,8 @@ function ekErrMsg(ex) {
   if (m.includes("name_exists")) return "الاسم موجود بالفعل";
   if (m.includes("name_required")) return "الاسم مطلوب";
   if (m.includes("serial_not_registered")) return "السيريال غير مسجّل في قاعدة البيانات — لا يمكن إصدار ضمان له";
+  if (m.includes("serial_belongs_other_pos")) return "هذا السيريال مُسلَّم لنقطة بيع أخرى — لا يمكنك إصدار ضمان له";
+  if (m.includes("serial_not_yours")) return "هذا السيريال غير مُسلَّم لنقطة بيعك — لا يمكنك إصدار ضمان له";
   if (m.includes("serial_delivered_to_pos")) return "هذا السيريال تم تسليمه لنقطة بيع — لا يمكن إصدار ضمان له";
   if (m.includes("serial_has_warranty")) { const mt = m.match(/serial_has_warranty:([A-Za-z0-9\-]+)/); return mt ? `هذا المنتج له شهادة ضمان بالفعل (${mt[1]}) — لا يمكن إصدار شهادة أخرى لنفس السيريال` : "هذا المنتج له شهادة ضمان بالفعل — لا يمكن إصدار شهادة أخرى لنفس السيريال"; }
   if (m.includes("item_not_found")) return "الصنف غير موجود";
@@ -1381,6 +1393,7 @@ function WarrantiesView({ onIssue }) {
                   </div>
                   <div style={{ fontWeight: 800, fontSize: 14.5, marginTop: 5 }}>{w.customer_name}{w.whatsapp ? <span style={{ fontWeight: 700, color: C.muted, fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5 }}> · {w.whatsapp}</span> : null}</div>
                   <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>{w.model} · SN {w.serial}</div>
+                  {w.sold_by && <div style={{ fontSize: 11.5, marginTop: 3, display: "inline-flex", alignItems: "center", gap: 4, color: C.primaryDark, fontWeight: 700 }}><ShieldCheck size={12} /> نقطة بيع: {w.sold_by}</div>}
                   <div style={{ fontSize: 11, color: C.muted, marginTop: 2, fontFamily: "'IBM Plex Mono', monospace", direction: "ltr", textAlign: "right" }}>{w.start_date} → {w.end_date}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
@@ -2097,8 +2110,8 @@ const qtyBtn = { width: 36, height: 36, borderRadius: 10, border: `1.5px solid $
 
 
 function Modal({ title, onClose, children, wide }) {
-  return <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,20,20,0.5)", display: "grid", placeItems: "center", padding: 16, zIndex: 50 }}>
-    <div onClick={(e) => e.stopPropagation()} className="ek-fade" style={{ background: C.surface, borderRadius: 20, padding: "20px 18px", width: "100%", maxWidth: wide ? 520 : 420, maxHeight: "88vh", overflowY: "auto" }}>
+  return <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,20,20,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "calc(env(safe-area-inset-top, 0px) + 16px) 14px calc(env(safe-area-inset-bottom, 0px) + 16px)", zIndex: 50, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+    <div onClick={(e) => e.stopPropagation()} className="ek-fade" style={{ background: C.surface, borderRadius: 20, padding: "20px 18px", width: "100%", maxWidth: wide ? 520 : 420, margin: "auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div style={{ fontWeight: 800, fontSize: 17 }}>{title}</div><button onClick={onClose} style={{ ...iconBtnStyle() }}><X size={16} /></button></div>
       {children}
     </div>

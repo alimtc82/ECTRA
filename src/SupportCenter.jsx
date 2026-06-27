@@ -26,7 +26,8 @@ async function sbInsert(table, row) {
 async function sbRpc(fn, args) {
   const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: "POST", headers: H, body: JSON.stringify(args) });
   if (!r.ok) throw new Error(await r.text());
-  return r.json();
+  const t = await r.text();
+  return t ? JSON.parse(t) : null;
 }
 
 const C = {
