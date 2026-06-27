@@ -14,6 +14,7 @@ export default function ResetPassword({ token }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState(false);
+  const [showPw, setShowPw] = useState(false);
 
   const submit = async () => {
     setErr("");
@@ -71,11 +72,14 @@ export default function ResetPassword({ token }) {
               <div style={{ display: "grid", gap: 16 }}>
                 <div>
                   <label style={{ display: "block", fontSize: 13.5, fontWeight: 700, marginBottom: 7, color: C.ink }}>كلمة السر الجديدة</label>
-                  <input type="password" value={p1} onChange={(e) => setP1(e.target.value)} placeholder="••••••••" style={inputStyle} />
+                  <div style={{ position: "relative" }}>
+                    <input type={showPw ? "text" : "password"} value={p1} onChange={(e) => setP1(e.target.value)} placeholder="••••••••" style={{ ...inputStyle, paddingLeft: 44 }} />
+                    <button type="button" onClick={() => setShowPw((v) => !v)} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, borderRadius: 8, border: "none", background: "transparent", color: C.muted, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>{showPw ? "إخفاء" : "إظهار"}</button>
+                  </div>
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: 13.5, fontWeight: 700, marginBottom: 7, color: C.ink }}>تأكيد كلمة السر</label>
-                  <input type="password" value={p2} onChange={(e) => setP2(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()} placeholder="••••••••" style={inputStyle} />
+                  <input type={showPw ? "text" : "password"} value={p2} onChange={(e) => setP2(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()} placeholder="••••••••" style={inputStyle} />
                 </div>
                 {err && <div style={{ fontSize: 13, color: C.danger, fontWeight: 600, textAlign: "center", padding: "8px 12px", background: "#FDECEC", borderRadius: 10 }}>{err}</div>}
                 <button onClick={submit} disabled={busy} style={{ padding: "15px", borderRadius: 16, border: "none", background: C.primary, color: "#fff", fontWeight: 800, fontSize: 16, cursor: "pointer", opacity: busy ? 0.7 : 1 }}>

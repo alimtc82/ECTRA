@@ -69,3 +69,6 @@ create index if not exists ectra_delivery_serials_order_idx on public.ectra_deli
 -- ectra_login: يرجّع pos_name (اسم نقطة البيع للمستخدم إن كان نقطة بيع).
 -- ectra_warranty_page: يرجّع sold_by (اسم نقطة البيع المُصدِرة لكل ضمان) — للأدمن لرؤية الكل مع الاسم.
 -- ملاحظة: الضمانات الصادرة قبل عمود created_by تظهر sold_by = null.
+
+-- ===== (4027) تسجيل الدخول غير حسّاس لحالة الأحرف في اسم المستخدم =====
+-- ectra_login: where lower(u.username)=lower(btrim(p_username))  (كان حسّاسًا للحالة، فـ Amgad1 ≠ amgad1)

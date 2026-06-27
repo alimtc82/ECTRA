@@ -174,6 +174,7 @@ function Login({ onLogin }) {
   const [err, setErr] = useState("");
   const [remember, setRemember] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const submit = async () => {
     if (!u.trim() || !p) return;
     setBusy(true); setErr("");
@@ -220,8 +221,9 @@ function Login({ onLogin }) {
               <label style={{ display: "block", fontSize: 14, fontWeight: 700, marginBottom: 8, color: C.ink }}>كلمة السر</label>
               <div style={{ position: "relative" }}>
                 <Lock size={18} color={C.muted} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)" }} />
-                <input type="password" value={p} onChange={(e) => setP(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()} placeholder="••••••••"
-                  style={{ width: "100%", padding: "13px 44px 13px 14px", borderRadius: 14, border: `1.5px solid ${C.line}`, background: C.field, fontSize: 15, color: C.ink, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 2 }} />
+                <input type={showPw ? "text" : "password"} value={p} onChange={(e) => setP(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()} placeholder="••••••••"
+                  style={{ width: "100%", padding: "13px 44px 13px 44px", borderRadius: 14, border: `1.5px solid ${C.line}`, background: C.field, fontSize: 15, color: C.ink, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 2 }} />
+                <button type="button" onClick={() => setShowPw((v) => !v)} title={showPw ? "إخفاء" : "إظهار"} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, borderRadius: 8, border: "none", background: "transparent", color: C.muted, cursor: "pointer", display: "grid", placeItems: "center" }}>{showPw ? <EyeOff size={18} /> : <Eye size={18} />}</button>
               </div>
             </div>
 
