@@ -94,6 +94,7 @@ export default function Landing({ onEnter, onEnterAdmin }) {
   const goSupport = onEnter || (() => {});
   const goAdmin = onEnterAdmin || onEnter || (() => {});
   const [selected, setSelected] = useState(null);
+  const [policy, setPolicy] = useState(null);
   const scrollToCatalog = () => { const el = document.getElementById("catalog"); if (el) el.scrollIntoView({ behavior: "smooth" }); };
 
   const featured = CATALOG.find((p) => p.name.includes("ANC")) || CATALOG[0];
@@ -287,7 +288,7 @@ export default function Landing({ onEnter, onEnterAdmin }) {
             <div>
               <h5 style={{ fontWeight: 700, fontSize: 17, margin: "0 0 22px" }}>روابط سريعة</h5>
               <div style={{ display: "grid", gap: 14, color: "rgba(255,255,255,0.5)", fontSize: 14 }}>
-                {[["خدمة الضمان", goSupport], ["تتبع الطلب", goSupport], ["تواصل معنا", goSupport]].map(([t, fn]) => (
+                {[["خدمة الضمان", goSupport], ["تتبع الطلب", goSupport], ["سياسة الخصوصية", () => setPolicy("privacy")], ["سياسة الاسترجاع", () => setPolicy("returns")], ["تواصل معنا", goSupport]].map(([t, fn]) => (
                   <button key={t} onClick={fn} className="btn" style={{ background: "none", border: "none", color: "inherit", font: "inherit", textAlign: "right", padding: 0, cursor: "pointer" }}>{t}</button>
                 ))}
               </div>
@@ -306,6 +307,7 @@ export default function Landing({ onEnter, onEnterAdmin }) {
       </footer>
 
       {selected && <ProductModal product={selected} onClose={() => setSelected(null)} />}
+      {policy && <PolicyModal type={policy} onClose={() => setPolicy(null)} />}
     </div>
   );
 }
@@ -348,6 +350,102 @@ function ProductModal({ product, onClose }) {
             ))}
           </div>
           <p style={{ fontSize: 11.5, color: C2.muted, textAlign: "center", marginTop: 16, marginBottom: 0 }}>موزّع معتمد · MTC GROUP — بضمان MTC GROUP والوكيل المصري LRT</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===================== سياسة الخصوصية + سياسة الاسترجاع ===================== */
+const POLICIES = {
+  privacy: {
+    title: "سياسة الخصوصية",
+    updated: "آخر تحديث: 2026",
+    intro: "نحن في MTC GROUP (الموزّع المعتمد لعلامة ECTRA في مصر — بنها) نحترم خصوصيتك ونلتزم بحماية بياناتك. توضّح هذه السياسة ما نجمعه وكيف نستخدمه.",
+    sections: [
+      { h: "البيانات التي نجمعها", items: [
+        "عند إرسال تقييم أو رأي: نحفظ الاسم (أو رقم الموبايل إن اخترت كتابته)، تقييمك بالنجوم، نص ملاحظتك، ومرجع اختياري.",
+        "قد تُعرض تقييمات العملاء علنًا داخل الموقع بعد مراجعتها من الإدارة.",
+      ] },
+      { h: "ما لا نجمعه", items: [
+        "لا نستخدم ملفات تعريف الارتباط (Cookies) ولا أي تخزين على جهازك.",
+        "لا نستخدم أدوات تتبّع أو تحليلات (مثل Google Analytics أو Facebook Pixel).",
+        "لا نطلب تحديد موقعك الجغرافي، ولا بريدك الإلكتروني، ولا أي بيانات بنكية.",
+      ] },
+      { h: "عمليات الاستعلام", items: [
+        "عند التحقق من منتج بالرقم التسلسلي أو الاستعلام عن صيانة بالكود، تُعالَج بياناتك لحظيًا لعرض النتيجة فقط، ولا نحتفظ بها.",
+      ] },
+      { h: "كيف نستخدم بياناتك", items: [
+        "لعرض آراء العملاء وتحسين جودة المنتجات والخدمة.",
+        "لا نبيع بياناتك أو نشاركها لأغراض تسويقية مع أي طرف ثالث.",
+        "تُخزَّن البيانات بشكل آمن لدى مزوّد استضافة موثوق (Supabase).",
+      ] },
+      { h: "حقوقك", items: [
+        "يمكنك طلب تعديل أو حذف تقييمك في أي وقت بالتواصل معنا عبر واتساب.",
+        "يُرجى تجنّب كتابة أي بيانات حسّاسة داخل نص التقييم.",
+      ] },
+      { h: "التواصل", items: [
+        "لأي استفسار بخصوص الخصوصية: تواصل مع MTC GROUP عبر واتساب أو بزيارة الفرع في بنها.",
+      ] },
+    ],
+  },
+  returns: {
+    title: "سياسة الاسترجاع والاستبدال",
+    updated: "آخر تحديث: 2026 — سياسة مبدئية قابلة للتعديل حسب سياسة الفرع",
+    intro: "نحرص في MTC GROUP على رضاك التام. توضّح هذه السياسة شروط استرجاع واستبدال منتجات ECTRA المشتراة من خلالنا.",
+    sections: [
+      { h: "مدة الاسترجاع/الاستبدال", items: [
+        "يحق لك طلب الاسترجاع أو الاستبدال خلال 14 يومًا من تاريخ الشراء.",
+      ] },
+      { h: "شروط القبول", items: [
+        "أن يكون المنتج بحالته الأصلية وكامل العبوة والملحقات.",
+        "وجود الفاتورة أو إثبات الشراء.",
+        "ألا يكون به أي ضرر ناتج عن سوء الاستخدام.",
+      ] },
+      { h: "منتجات قد لا تكون قابلة للاسترجاع", items: [
+        "المنتجات التي فُتح ختمها لأسباب صحية (مثل سماعات الأذن الداخلية) ما لم يوجد عيب صناعة.",
+        "المنتجات المتضرّرة بسبب سوء الاستخدام أو الكسر.",
+      ] },
+      { h: "استرداد المبلغ", items: [
+        "يتم ردّ المبلغ بنفس وسيلة الدفع بعد فحص المنتج والتأكد من استيفائه للشروط.",
+      ] },
+      { h: "الضمان (منفصل عن الاسترجاع)", items: [
+        "عيوب الصناعة تُعالَج من خلال الضمان المعتمد (MTC GROUP + الوكيل المصري LRT)، وليست بالضرورة استرجاعًا للمبلغ.",
+      ] },
+      { h: "كيفية الطلب", items: [
+        "تواصل معنا عبر واتساب أو بزيارة فرع MTC GROUP في بنها مع المنتج وإثبات الشراء.",
+      ] },
+    ],
+  },
+};
+
+function PolicyModal({ type, onClose }) {
+  const p = POLICIES[type] || POLICIES.privacy;
+  return (
+    <div onClick={onClose} dir="rtl" style={{ position: "fixed", inset: 0, background: "rgba(20,20,20,0.55)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "calc(env(safe-area-inset-top,0px) + 18px) 14px calc(env(safe-area-inset-bottom,0px) + 18px)", zIndex: 100, overflowY: "auto", fontFamily: "Tajawal, system-ui, sans-serif" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: C.surface, color: C.ink, borderRadius: 22, width: "100%", maxWidth: 560, margin: "auto", display: "flex", flexDirection: "column", maxHeight: "calc(100dvh - 60px)", overflow: "hidden", boxShadow: "0 24px 60px rgba(20,20,20,0.25)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 22px", borderBottom: `1px solid ${C.line}`, flexShrink: 0 }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 18 }}>{p.title}</div>
+            <div style={{ fontSize: 11.5, color: C.muted, marginTop: 2 }}>{p.updated}</div>
+          </div>
+          <button onClick={onClose} aria-label="إغلاق" style={{ width: 36, height: 36, borderRadius: 10, border: `1.5px solid ${C.line}`, background: C.surface, color: C.muted, cursor: "pointer", fontSize: 18, lineHeight: 1 }}>×</button>
+        </div>
+        <div style={{ padding: "18px 22px", overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+          <p style={{ fontSize: 14, color: C.inkSoft, lineHeight: 1.9, margin: "0 0 18px" }}>{p.intro}</p>
+          {p.sections.map((sec, i) => (
+            <div key={i} style={{ marginBottom: 16 }}>
+              <div style={{ fontWeight: 800, fontSize: 15, color: C.primaryDark, marginBottom: 8, display: "flex", alignItems: "center", gap: 7 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.primary, display: "inline-block" }} />{sec.h}
+              </div>
+              <ul style={{ margin: 0, paddingInlineStart: 20, display: "grid", gap: 6 }}>
+                {sec.items.map((it, j) => <li key={j} style={{ fontSize: 13.5, color: C.inkSoft, lineHeight: 1.8 }}>{it}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: "14px 22px", borderTop: `1px solid ${C.line}`, flexShrink: 0 }}>
+          <button onClick={onClose} className="btn" style={{ width: "100%", padding: "14px", borderRadius: 14, border: "none", background: C.primary, color: "#fff", fontWeight: 800, fontSize: 15.5, cursor: "pointer", fontFamily: "inherit" }}>موافق</button>
         </div>
       </div>
     </div>
