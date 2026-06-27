@@ -108,7 +108,7 @@ function Wordmark({ light, size = 22, sub }) {
 const Auth = React.createContext(null);
 const useAuth = () => React.useContext(Auth);
 
-export default function App() {
+export default function App({ onHome }) {
   const [view, setView] = useState("home");
   const [me, setMe] = useState(() => { try { const r = localStorage.getItem("ectra_me"); return r ? JSON.parse(r) : null; } catch { return null; } });
   const [theme, setTheme] = useState("light");
@@ -144,7 +144,7 @@ export default function App() {
       `}</style>
 
       {!me ? (
-        <Login onLogin={(u, remember) => { setMe(u); setView("home"); try { remember ? localStorage.setItem("ectra_me", JSON.stringify(u)) : localStorage.removeItem("ectra_me"); } catch {} }} />
+        <Login onHome={onHome} onLogin={(u, remember) => { setMe(u); setView("home"); try { remember ? localStorage.setItem("ectra_me", JSON.stringify(u)) : localStorage.removeItem("ectra_me"); } catch {} }} />
       ) : (
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: "18px 16px 48px" }}>
           <Header onBack={view !== "home" ? () => setView("home") : null} />
@@ -167,7 +167,7 @@ export default function App() {
 }
 
 /* ===================== تسجيل الدخول ===================== */
-function Login({ onLogin }) {
+function Login({ onLogin, onHome }) {
   const { theme, toggleTheme } = useAuth();
   const [u, setU] = useState("");
   const [p, setP] = useState("");
@@ -196,7 +196,7 @@ function Login({ onLogin }) {
       <div className="ek-fade" style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ textAlign: "center", marginBottom: 26 }}>
           <div style={{ fontSize: 10, letterSpacing: "0.14em", color: C.muted, fontWeight: 700, marginBottom: 12 }}>ECTRA · By Kieslect</div>
-          <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center" }}>
+          <div onClick={onHome} title="الرجوع للصفحة الرئيسية" style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", cursor: onHome ? "pointer" : "default" }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 3, fontFamily: "'Archivo', sans-serif", fontWeight: 900, fontSize: 30, letterSpacing: "0.04em", color: C.ink, lineHeight: 1 }}>
               ECTRA<span style={{ color: C.primary }}>.</span>
             </div>

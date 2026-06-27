@@ -13,7 +13,7 @@ function Root() {
   // "landing" | "support" | "admin"
   const [view, setView] = useState("landing");
 
-  if (view === "admin") return <App />;
+  if (view === "admin") return <App onHome={() => setView("landing")} />;
   if (view === "support") return <SupportCenter onBack={() => setView("landing")} />;
   return (
     <Landing

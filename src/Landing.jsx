@@ -279,7 +279,7 @@ export default function Landing({ onEnter, onEnterAdmin }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 40, marginBottom: 56 }}>
             <div style={{ gridColumn: "span 1", minWidth: 240 }}>
               <img src={mtcLogo} alt="MTC GROUP" style={{ height: 48, width: "auto", filter: "brightness(0) invert(1)", marginBottom: 22 }} />
-              <p style={{ color: "rgba(255,255,255,0.5)", maxWidth: 360, lineHeight: 1.8, margin: "0 0 22px" }}>نفخر في MTC GROUP بكوننا الموزّع المعتمد لعلامة ECTRA في مصر، ملتزمون بتقديم الأفضل دائماً لعملائنا في بنها وجميع أنحاء الجمهورية.</p>
+              <p style={{ color: "rgba(255,255,255,0.5)", maxWidth: 360, lineHeight: 1.8, margin: "0 0 22px" }}>نفخر في MTC GROUP بكوننا أحد الموزّعين المعتمدين لعلامة ECTRA في مصر، ملتزمون بتقديم الأفضل دائماً لعملائنا في بنها وجميع أنحاء الجمهورية.</p>
               <div style={{ display: "flex", gap: 12 }}>
                 <a href="https://mtc-group.online" target="_blank" rel="noreferrer" className="btn" style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.05)", display: "grid", placeItems: "center", color: "#fff" }}><Globe size={16} /></a>
                 <a href={`https://wa.me/201224822220`} target="_blank" rel="noreferrer" className="btn" style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.05)", display: "grid", placeItems: "center", color: "#fff" }}><AtSign size={16} /></a>
@@ -295,7 +295,7 @@ export default function Landing({ onEnter, onEnterAdmin }) {
             </div>
             <div>
               <h5 style={{ fontWeight: 700, fontSize: 17, margin: "0 0 22px" }}>المقر الرئيسي</h5>
-              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.8, margin: "0 0 14px" }}>بنها، القليوبية<br />مركز خدمة MTC GROUP المعتمد</p>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.8, margin: "0 0 14px" }}>بنها، القليوبية<br />مركز خدمة معتمد · MTC GROUP</p>
               <a href="https://maps.google.com/?q=MTC+GROUP+Benha" target="_blank" rel="noreferrer" className="btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.primary, fontWeight: 700, textDecoration: "none" }}><MapPin size={18} /> تحديد الموقع على الخريطة</a>
             </div>
           </div>
@@ -361,7 +361,7 @@ const POLICIES = {
   privacy: {
     title: "سياسة الخصوصية",
     updated: "آخر تحديث: 2026",
-    intro: "نحن في MTC GROUP (الموزّع المعتمد لعلامة ECTRA في مصر — بنها) نحترم خصوصيتك ونلتزم بحماية بياناتك. توضّح هذه السياسة ما نجمعه وكيف نستخدمه.",
+    intro: "نحن في MTC GROUP (موزّع معتمد لعلامة ECTRA في مصر — بنها) نحترم خصوصيتك ونلتزم بحماية بياناتك. توضّح هذه السياسة ما نجمعه وكيف نستخدمه.",
     sections: [
       { h: "البيانات التي نجمعها", items: [
         "عند إرسال تقييم أو رأي: نحفظ الاسم (أو رقم الموبايل إن اخترت كتابته)، تقييمك بالنجوم، نص ملاحظتك، ومرجع اختياري.",
