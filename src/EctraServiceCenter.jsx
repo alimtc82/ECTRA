@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Zap, Check, ChevronLeft, ChevronRight, ArrowLeft, User, Package, Wrench,
   MessageCircle, Bell, Camera, Search, Award, Printer, FileText, PlusCircle,
@@ -2113,12 +2114,15 @@ const qtyBtn = { width: 36, height: 36, borderRadius: 10, border: `1.5px solid $
 
 
 function Modal({ title, onClose, children, wide }) {
-  return <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,20,20,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "calc(env(safe-area-inset-top, 0px) + 16px) 14px calc(env(safe-area-inset-bottom, 0px) + 16px)", zIndex: 50, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
-    <div onClick={(e) => e.stopPropagation()} className="ek-fade" style={{ background: C.surface, borderRadius: 20, padding: "20px 18px", width: "100%", maxWidth: wide ? 520 : 420, margin: "auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div style={{ fontWeight: 800, fontSize: 17 }}>{title}</div><button onClick={onClose} style={{ ...iconBtnStyle() }}><X size={16} /></button></div>
-      {children}
-    </div>
-  </div>;
+  return createPortal(
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,20,20,0.5)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "calc(env(safe-area-inset-top, 0px) + 16px) 14px calc(env(safe-area-inset-bottom, 0px) + 16px)", zIndex: 1000, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+      <div onClick={(e) => e.stopPropagation()} className="ek-fade" style={{ background: C.surface, borderRadius: 20, padding: "20px 18px", width: "100%", maxWidth: wide ? 520 : 420, margin: "auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div style={{ fontWeight: 800, fontSize: 17 }}>{title}</div><button onClick={onClose} style={{ ...iconBtnStyle() }}><X size={16} /></button></div>
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
 }
 function ModalActions({ onCancel, onSave, busy }) {
   return <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
